@@ -93,49 +93,48 @@ class Showroom_Detail(APIView):
 # function based views 
 @api_view(['GET','POST'])
 def Car_list(request):
-    if request.method == 'GET':  # Retrieve a list of cars
-        cars = Car.objects.all()  # Database interaction: Retrieve all Car objects
-        serializer = CarSerializer(cars, many=True)  # Serialization: Convert Car objects to JSON
-        return Response(serializer.data)  # Response: Send serialized data (JSON)
+    if request.method == 'GET': 
+        cars = Car.objects.all()  
+        serializer = CarSerializer(cars, many=True)  
+        return Response(serializer.data)  
 
-    if request.method == 'POST':  # Create a new car
-        serializer = CarSerializer(data=request.data)  # Deserialization: Convert incoming JSON to Python
+    if request.method == 'POST':  
+        serializer = CarSerializer(data=request.data)  
         if serializer.is_valid():
-            #serializer.is_valid():  The is_valid() method performs validation.  It checks if the data in the OrderedDict conforms to the field types and constraints defined in your serializer.  If the data is valid, the validated data is stored in the serializer.validated_data attribute, also as an OrderedDict.
-              # Validation: Check if the data is valid
-            serializer.save()  # Database interaction: Create and save the Car object
+           
+            serializer.save()  
 
-            #serializer.save(): When you call serializer.save(), the serializer uses the data from serializer
-            return Response(serializer.data, status=status.HTTP_201_CREATED)  # Response: Send serialized data (JSON) and 201 Created status
+          
+            return Response(serializer.data, status=status.HTTP_201_CREATED)  
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # Response: Send error messages and 400 Bad Request status
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
 
 @api_view(['GET','PUT','DELETE'])
-def Car_details(request, pk):  # pk: Primary key of the Car object
-    if request.method == 'GET':  # Retrieve a specific car
+def Car_details(request, pk): 
+    if request.method == 'GET': 
         try:
-            car = Car.objects.get(pk=pk)  # Database interaction: Retrieve a specific Car object
-        except Car.DoesNotExist:  # Error handling: Car not found
-            return Response({'Error': "Can not found"}, status=status.HTTP_404_NOT_FOUND)  # Response: 404 Not Found status
-        serializer = CarSerializer(car)  # Serialization: Convert Car object to JSON
-        return Response(serializer.data)  # Response: Send serialized data (JSON)
+            car = Car.objects.get(pk=pk)  
+        except Car.DoesNotExist:  
+            return Response({'Error': "Can not found"}, status=status.HTTP_404_NOT_FOUND)  
+        serializer = CarSerializer(car)  
+        return Response(serializer.data)  
 
-    if request.method == 'PUT':  # Update a specific car
+    if request.method == 'PUT': 
         try:
-            car = Car.objects.get(pk=pk)  # Database interaction: Retrieve the Car object to update
-        except Car.DoesNotExist:  # Error handling: Car not found
-            return Response({'Error': "Can not found"}, status=status.HTTP_404_NOT_FOUND)  # Response: 404 Not Found status
-        serializer = CarSerializer(car, data=request.data)  # Deserialization: Convert incoming JSON to Python for update
-        if serializer.is_valid():  # Validation: Check if the data is valid
-            serializer.save()  # Database interaction: Update and save the Car object
-            return Response(serializer.data)  # Response: Send serialized data (JSON)
+            car = Car.objects.get(pk=pk)  
+        except Car.DoesNotExist:  
+            return Response({'Error': "Can not found"}, status=status.HTTP_404_NOT_FOUND)  
+        serializer = CarSerializer(car, data=request.data)  
+        if serializer.is_valid():  
+            serializer.save()  
+            return Response(serializer.data)  
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # Response: Send error messages and 400 Bad Request status
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
 
-    if request.method == 'DELETE':  # Delete a specific car
+    if request.method == 'DELETE':  
         try:
-            car = Car.objects.get(pk=pk)  # Database interaction: Retrieve the Car object to delete
-        except Car.DoesNotExist:  # Error handling: Car not found
-            return Response({'Error': "Can not found"}, status=status.HTTP_404_NOT_FOUND)  # Response: 404 Not Found status
-        car.delete()  # Database interaction: Delete the Car object
-        return Response(status=status.HTTP_204_NO_CONTENT)  # Response: 204 No Content status
+            car = Car.objects.get(pk=pk)  
+        except Car.DoesNotExist: 
+            return Response({'Error': "Can not found"}, status=status.HTTP_404_NOT_FOUND)  
+        car.delete()  
+        return Response(status=status.HTTP_204_NO_CONTENT)  
