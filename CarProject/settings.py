@@ -123,3 +123,13 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#want to apply in every function
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES':['rest_framework.authentication.BasicAuthentication'],
+#     'DEFAULT_PERMISSION_CLASSES':['rest_framework.permissions.IsAuthenticated']
+# }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES':['rest_framework.authentication.SessionAuthentication'],
+     'DEFAULT_PERMISSION_CLASSES':['rest_framework.permissions.IsAuthenticated']
+ }

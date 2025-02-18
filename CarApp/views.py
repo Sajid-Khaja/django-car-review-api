@@ -5,20 +5,20 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated,AllowAny,IsAdminUser
-from rest_framework.authentication import BasicAuthentication
+from rest_framework.authentication import BasicAuthentication,SessionAuthentication
+from rest_framework import mixins
+from rest_framework import generics
 
 
-class Review_view(APIView):
-    def get(self,request):
-        rev=Review.objects.all()
-        serializer=ReviewSerializer(rev,many=True,context={'request' : request})
-        return Response(serializer.data)
-    def post(self,request):
-        serializer=ReviewSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class Review_view(mixins.ListModelMixin,mixins.CreateModelMixin,generics.GenericAPIView):
+    queryset=Review.objects.all()
+    serializer_class=ReviewSerializer
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+    
 class Rev_Detail(APIView):
 
     def get(self,request,pk):
@@ -48,9 +48,12 @@ class Rev_Detail(APIView):
 
 
 class Showroom_View(APIView):
-    authentication_classes=[BasicAuthentication]
-    #permission_classes=[IsAuthenticated]
-    #permission_classes=[AllowAny]
+    # authentication_classes=[BasicAuthentication]
+    # #permission_classes=[IsAuthenticated]
+    # #permission_classes=[AllowAny]
+    # permission_classes=[IsAdminUser]
+    authentication_classes=[SessionAuthentication]
+   # permission_classes=[IsAuthenticated]
     permission_classes=[IsAdminUser]
     def get(self,request,format=None):
         showroom=Showroom.objects.all()
@@ -67,10 +70,10 @@ class Showroom_View(APIView):
         
         
 class Showroom_Detail(APIView):
-    authentication_classes=[BasicAuthentication]
-    #permission_classes=[IsAuthenticated]
-    #permission_classes=[AllowAny]
-    permission_classes=[IsAdminUser]
+    # authentication_classes=[BasicAuthentication]
+    # #permission_classes=[IsAuthenticated]
+    # #permission_classes=[AllowAny]
+    # permission_classes=[IsAdminUser]
 
     def get(self,request,pk):
         try:
