@@ -4,48 +4,39 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated,AllowAny,IsAdminUser
+from rest_framework.permissions import IsAuthenticated,AllowAny,IsAdminUser,DjangoModelPermissions
 from rest_framework.authentication import BasicAuthentication,SessionAuthentication
 from rest_framework import mixins
 from rest_framework import generics
 
 
-class Review_view(mixins.ListModelMixin,mixins.CreateModelMixin,generics.GenericAPIView):
+class Review_view(generics.ListCreateAPIView):
     queryset=Review.objects.all()
     serializer_class=ReviewSerializer
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+class Rev_Detail(generics.RetrieveUpdateDestroyAPIView):
+    queryset=Review.objects.all()
+    serializer_class=ReviewSerializer
 
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+
+# class Review_view(mixins.ListModelMixin,mixins.CreateModelMixin,generics.GenericAPIView):
+#     authentication_classes=[SessionAuthentication]
+#    # permission_classes=[IsAuthenticated]
+#     permission_classes=[DjangoModelPermissions]
+#     queryset=Review.objects.all()
+#     serializer_class=ReviewSerializer
+#     def get(self, request, *args, **kwargs):
+#         return self.list(request, *args, **kwargs)
+
+#     def post(self, request, *args, **kwargs):
+#         return self.create(request, *args, **kwargs)
     
-class Rev_Detail(APIView):
-
-    def get(self,request,pk):
-        try:
-            rev = Review.objects.get(pk=pk)  
-        except Review.DoesNotExist:  
-            return Response({'Error': "OOPS!"}, status=status.HTTP_404_NOT_FOUND) 
-        serializer = ReviewSerializer(rev)  
-        return Response(serializer.data) 
-     
-    def put(self,request,pk):
-        try:
-            rev = Review.objects.get(pk=pk) 
-        except Review.DoesNotExist:  
-            return Response({'Error': "OOPS!"}, status=status.HTTP_404_NOT_FOUND)  
-        serializer = ReviewSerializer(rev, data=request.data)  
-        if serializer.is_valid():  
-            serializer.save()  
-            return Response(serializer.data)  
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # Response: Send error messages and 400 Bad Request status
-    
-    def delete(self,request,pk):
-       rev=Review.objects.get(pk=pk)
-       rev.delete()
-       return Response(status=status.HTTP_204_NO_CONTENT)    
-
+# class Rev_Detail(mixins.RetrieveModelMixin,mixins.DestroyModelMixin,generics.GenericAPIView):
+#     queryset=Review.objects.all()
+#     serializer_class=ReviewSerializer
+#     def get(self, request, *args, **kwargs):
+#         return self.retrieve(request, *args, **kwargs)
+#     def delete(self, request, *args, **kwargs):
+#         return self.destroy(request, *args, **kwargs)
 
 class Showroom_View(APIView):
     # authentication_classes=[BasicAuthentication]
