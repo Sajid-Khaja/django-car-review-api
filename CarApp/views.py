@@ -4,6 +4,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated,AllowAny,IsAdminUser
+from rest_framework.authentication import BasicAuthentication
 
 
 class Review_view(APIView):
@@ -46,6 +48,10 @@ class Rev_Detail(APIView):
 
 
 class Showroom_View(APIView):
+    authentication_classes=[BasicAuthentication]
+    #permission_classes=[IsAuthenticated]
+    #permission_classes=[AllowAny]
+    permission_classes=[IsAdminUser]
     def get(self,request,format=None):
         showroom=Showroom.objects.all()
         serializer=ShowroomSerializer(showroom,many=True,context={'request': request})
@@ -61,13 +67,17 @@ class Showroom_View(APIView):
         
         
 class Showroom_Detail(APIView):
+    authentication_classes=[BasicAuthentication]
+    #permission_classes=[IsAuthenticated]
+    #permission_classes=[AllowAny]
+    permission_classes=[IsAdminUser]
 
     def get(self,request,pk):
         try:
             showroom = Showroom.objects.get(pk=pk)  
         except Showroom.DoesNotExist:  
             return Response({'Error': "OOPS!"}, status=status.HTTP_404_NOT_FOUND) 
-        serializer = ShowroomSerializer(showroom)  
+        serializer = ShowroomSerializer(showroom,context={'request': request})  
         return Response(serializer.data) 
      
     def put(self,request,pk):
@@ -83,6 +93,7 @@ class Showroom_Detail(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # Response: Send error messages and 400 Bad Request status
     
     def delete(self,request,pk):
+       
        showroom=Showroom.objects.get(pk=pk)
        showroom.delete()
        return Response(status=status.HTTP_204_NO_CONTENT)
@@ -92,7 +103,9 @@ class Showroom_Detail(APIView):
 
 # function based views 
 @api_view(['GET','POST'])
+
 def Car_list(request):
+    
     if request.method == 'GET': 
         cars = Car.objects.all()  
         serializer = CarSerializer(cars, many=True)  
